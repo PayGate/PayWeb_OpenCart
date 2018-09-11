@@ -3,7 +3,7 @@
  * Copyright (c) 2018 PayGate (Pty) Ltd
  *
  * Author: App Inlet (Pty) Ltd
- * 
+ *
  * Released under the GNU General Public License
  */
 class ControllerExtensionPaymentPaygate extends Controller
@@ -14,16 +14,12 @@ class ControllerExtensionPaymentPaygate extends Controller
     public function index()
     {
         $this->load->language( 'extension/payment/paygate' );
-
         $this->document->setTitle( $this->language->get( 'heading_title' ) );
-
         $this->load->model( 'setting/setting' );
 
         if (  ( $this->request->server['REQUEST_METHOD'] == 'POST' ) && $this->validate() ) {
             $this->model_setting_setting->editSetting( 'payment_paygate', $this->request->post );
-
             $this->session->data['success'] = $this->language->get( 'text_success' );
-
             $this->response->redirect( $this->url->link( 'marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment', true ) );
         }
 
@@ -78,7 +74,6 @@ class ControllerExtensionPaymentPaygate extends Controller
         );
 
         $data['action'] = $this->url->link( 'extension/payment/paygate', 'user_token=' . $this->session->data['user_token'], true );
-
         $data['cancel'] = $this->url->link( 'marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment', true );
 
         if ( isset( $this->request->post['payment_paygate_total'] ) ) {
