@@ -3,15 +3,17 @@
  * Copyright (c) 2018 PayGate (Pty) Ltd
  *
  * Author: App Inlet (Pty) Ltd
- * 
+ *
  * Released under the GNU General Public License
  */
+
 class ControllerExtensionPaymentPaygate extends Controller
 {
+
     public function index()
     {
-
         unset( $this->session->data['REFERENCE'] );
+
         $data['text_loading']   = $this->language->get( 'text_loading' );
         $data['button_confirm'] = $this->language->get( 'button_confirm' );
         $data['text_loading']   = $this->language->get( 'text_loading' );
@@ -22,15 +24,14 @@ class ControllerExtensionPaymentPaygate extends Controller
         $order_info = $this->model_checkout_order->getOrder( $this->session->data['order_id'] );
 
         if ( $order_info ) {
-
             $preAmount = number_format( $order_info['total'], 2, '', '' );
-
             $dateTime  = new DateTime();
             $time      = $dateTime->format( 'YmdHis' );
             $paygateID = filter_var( $this->config->get( 'payment_paygate_merchant_id' ), FILTER_SANITIZE_STRING );
-            $reference = filter_var( $order_info['order_id'] . $time, FILTER_SANITIZE_STRING );
+            $reference = filter_var( $order_info['order_id'], FILTER_SANITIZE_STRING );
             $amount    = filter_var( $preAmount, FILTER_SANITIZE_NUMBER_INT );
             $currency  = '';
+
             if ( $this->config->get( 'config_currency' ) != '' ) {
                 $currency = filter_var( $this->config->get( 'config_currency' ), FILTER_SANITIZE_STRING );
             } else {
@@ -47,62 +48,48 @@ class ControllerExtensionPaymentPaygate extends Controller
             $notifyUrl       = filter_var( $this->url->link( 'extension/payment/paygate/notify_handler', '', true ), FILTER_SANITIZE_URL );
             $userField1      = $order_info['order_id'];
             $userField2      = '';
-            $userField3      = 'opencart-v3.0.2.1';
+            $userField3      = 'opencart-v3.0.2';
             $doVault         = '';
             $vaultID         = '';
-
-            $encryption_key = $this->config->get( 'payment_paygate_merchant_key' );
-
+            $encryption_key  = $this->config->get( 'payment_paygate_merchant_key' );
             $checksum_source = $paygateID . $reference . $amount . $currency . $returnUrl . $transDate;
 
             if ( $locale ) {
                 $checksum_source .= $locale;
             }
-
             if ( $country ) {
                 $checksum_source .= $country;
             }
-
             if ( $email ) {
                 $checksum_source .= $email;
             }
-
             if ( $payMethod ) {
                 $checksum_source .= $payMethod;
             }
-
             if ( $payMethodDetail ) {
                 $checksum_source .= $payMethodDetail;
             }
-
             if ( $notifyUrl ) {
                 $checksum_source .= $notifyUrl;
             }
-
             if ( $userField1 ) {
                 $checksum_source .= $userField1;
             }
-
             if ( $userField2 ) {
                 $checksum_source .= $userField2;
             }
-
             if ( $userField3 ) {
                 $checksum_source .= $userField3;
             }
-
             if ( $doVault != '' ) {
                 $checksum_source .= $doVault;
             }
-
             if ( $vaultID != '' ) {
                 $checksum_source .= $vaultID;
             }
 
             $checksum_source .= $encryption_key;
-
-            $checksum = md5( $checksum_source );
-
+            $checksum     = md5( $checksum_source );
             $initiateData = array(
                 'PAYGATE_ID'        => $paygateID,
                 'REFERENCE'         => $reference,
@@ -123,63 +110,61 @@ class ControllerExtensionPaymentPaygate extends Controller
                 'VAULT_ID'          => $vaultID,
                 'CHECKSUM'          => $checksum,
             );
-
             $CHECKSUM       = null;
             $PAY_REQUEST_ID = null;
             $fields_string  = '';
 
-            //url-ify the data for the POST
+            // Url-ify the data for the POST
             foreach ( $initiateData as $key => $value ) {
                 $fields_string .= $key . '=' . $value . '&';
             }
+
             rtrim( $fields_string, '&' );
 
-            //open connection
+            // Open connection
             $ch = curl_init();
-            //set the url, number of POST vars, POST data
+
+            // Set the url, number of POST vars, POST data
             curl_setopt( $ch, CURLOPT_POST, 1 );
             curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
             curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, false );
             curl_setopt( $ch, CURLOPT_URL, 'https://secure.paygate.co.za/payweb3/initiate.trans' );
             curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-
-//             curl_setopt($ch, CURLOPT_INTERFACE, $_SERVER['SERVER_ADDR']);
             curl_setopt( $ch, CURLOPT_POST, count( $initiateData ) );
             curl_setopt( $ch, CURLOPT_POSTFIELDS, $fields_string );
 
-            //execute post
+            // Execute post
             $result = curl_exec( $ch );
 
-            //close connection
+            // Close connection
             curl_close( $ch );
 
             parse_str( $result );
 
             if ( isset( $ERROR ) ) {
-
                 print_r( 'Error trying to initiate a transaction, paygate error code: ' . $ERROR . '. Log support ticket to <a href="' . $this->url->link( 'information/contact' ) . '">shop owner</a>' );
+
                 die();
             }
 
-            $data['CHECKSUM']                 = $CHECKSUM;
-            $data['PAY_REQUEST_ID']           = $PAY_REQUEST_ID;
-            $this->session->data['REFERENCE'] = $time;
+            $data['CHECKSUM']       = $CHECKSUM;
+            $data['PAY_REQUEST_ID'] = $PAY_REQUEST_ID;
 
+            $this->session->data['REFERENCE'] = $time;
         } else {
             print_r( 'Order could not be found, order_id: ' . $this->session->data['order_id'] . '. Log support ticket to <a href="' . $this->url->link( 'information/contact' ) . '">shop owner</a>' );
             die();
         }
 
         return $this->load->view( 'extension/payment/paygate', $data );
-
     }
 
     public function paygate_return()
     {
-
         $this->load->language( 'checkout/paygate' );
         $statusDesc = '';
         $status     = '';
+
         if ( isset( $this->session->data['order_id'] ) ) {
             $this->cart->clear();
 
@@ -192,63 +177,59 @@ class ControllerExtensionPaymentPaygate extends Controller
                     'name'        => $this->customer->getFirstName() . ' ' . $this->customer->getLastName(),
                     'order_id'    => $this->session->data['order_id'],
                 );
-
                 $this->model_account_activity->addActivity( 'order_account', $activity_data );
             } else {
                 $activity_data = array(
                     'name'     => $this->session->data['guest']['firstname'] . ' ' . $this->session->data['guest']['lastname'],
                     'order_id' => $this->session->data['order_id'],
                 );
-
                 $this->model_account_activity->addActivity( 'order_guest', $activity_data );
             }
 
             $paygateID      = filter_var( $this->config->get( 'payment_paygate_merchant_id' ), FILTER_SANITIZE_STRING );
             $pay_request_id = filter_var( $_POST['PAY_REQUEST_ID'], FILTER_SANITIZE_STRING );
-            $reference      = filter_var( $this->session->data['order_id'] . $this->session->data['REFERENCE'], FILTER_SANITIZE_STRING );
+            $reference      = filter_var( $this->session->data['order_id'], FILTER_SANITIZE_STRING );
             $encryption_key = $this->config->get( 'payment_paygate_merchant_key' );
             $checksum       = md5( $paygateID . $pay_request_id . $reference . $encryption_key );
-
-            $queryData = array(
+            $queryData      = array(
                 'PAYGATE_ID'     => $paygateID,
                 'PAY_REQUEST_ID' => $pay_request_id,
                 'REFERENCE'      => $reference,
                 'CHECKSUM'       => $checksum,
             );
-
             $TRANSACTION_STATUS = null;
             $PAY_METHOD_DETAIL  = null;
             $fields_string      = null;
 
-            //url-ify the data for the POST
+            // Url-ify the data for the POST
             foreach ( $queryData as $key => $value ) {
                 $fields_string .= $key . '=' . $value . '&';
             }
+
             rtrim( $fields_string, '&' );
 
-            //open connection
+            // Open connection
             $ch = curl_init();
-            //set the url, number of POST vars, POST data
+
+            // Set the url, number of POST vars, POST data
             curl_setopt( $ch, CURLOPT_POST, 1 );
             curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
             curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, false );
             curl_setopt( $ch, CURLOPT_URL, 'https://secure.paygate.co.za/payweb3/query.trans' );
             curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-
-//             curl_setopt($ch, CURLOPT_INTERFACE, $_SERVER['SERVER_ADDR']);
             curl_setopt( $ch, CURLOPT_POST, count( $queryData ) );
             curl_setopt( $ch, CURLOPT_POSTFIELDS, $fields_string );
+
             unset( $this->session->data['REFERENCE'] );
 
-            //execute post
+            // Execute post
             $result = curl_exec( $ch );
 
-            //close connection
+            // Close connection
             curl_close( $ch );
-
             parse_str( $result );
-
             $pay_method_desc = '';
+
             if ( isset( $PAY_METHOD_DETAIL ) && $PAY_METHOD_DETAIL != '' ) {
                 $pay_method_desc = ', using a payment method of ' . $PAY_METHOD_DETAIL;
             }
@@ -256,9 +237,10 @@ class ControllerExtensionPaymentPaygate extends Controller
             $orderStatusId  = '7';
             $resultsComment = '';
 
-            //mapping pg transactions status with open card statuses
+            // Mapping pg transactions status with open card statuses
             if ( isset( $TRANSACTION_STATUS ) ) {
                 $status = 'ok';
+
                 if ( $TRANSACTION_STATUS == 0 ) {
                     $orderStatusId = 1;
                     $statusDesc    = 'pending';
@@ -275,14 +257,13 @@ class ControllerExtensionPaymentPaygate extends Controller
 
                 $resultsComment = "Returned from PayGate with a status of " . $statusDesc . $pay_method_desc;
             } else {
-
                 $orderStatusId  = 1;
                 $statusDesc     = 'pending';
                 $resultsComment = 'Transaction status verification failed. Please contact the shop owner to confirm transaction status.';
             }
+
             $this->load->model( 'checkout/order' );
             $this->model_checkout_order->addOrderHistory( $this->session->data['order_id'], $orderStatusId, $resultsComment, true );
-
             unset( $this->session->data['shipping_method'] );
             unset( $this->session->data['shipping_methods'] );
             unset( $this->session->data['payment_method'] );
@@ -305,8 +286,7 @@ class ControllerExtensionPaymentPaygate extends Controller
             $this->document->setTitle( $data['heading_title'] );
         }
 
-        $data['breadcrumbs'] = array();
-
+        $data['breadcrumbs']   = array();
         $data['breadcrumbs'][] = array(
             'text' => $this->language->get( 'text_home' ),
             'href' => $this->url->link( 'common/home' ),
@@ -334,22 +314,20 @@ class ControllerExtensionPaymentPaygate extends Controller
         }
 
         $data['button_continue'] = $this->language->get( 'button_continue' );
-
-        $data['continue'] = $this->url->link( 'common/home' );
-
-        $data['column_left']    = $this->load->controller( 'common/column_left' );
-        $data['column_right']   = $this->load->controller( 'common/column_right' );
-        $data['content_top']    = $this->load->controller( 'common/content_top' );
-        $data['content_bottom'] = $this->load->controller( 'common/content_bottom' );
-        $data['footer']         = $this->load->controller( 'common/footer' );
-        $data['header']         = $this->load->controller( 'common/header' );
+        $data['continue']        = $this->url->link( 'common/home' );
+        $data['column_left']     = $this->load->controller( 'common/column_left' );
+        $data['column_right']    = $this->load->controller( 'common/column_right' );
+        $data['content_top']     = $this->load->controller( 'common/content_top' );
+        $data['content_bottom']  = $this->load->controller( 'common/content_bottom' );
+        $data['footer']          = $this->load->controller( 'common/footer' );
+        $data['header']          = $this->load->controller( 'common/header' );
 
         $this->response->setOutput( $this->load->view( 'common/success', $data ) );
     }
 
     public function notify_handler()
     {
-        //Notify PayGate that information has been received
+        // Notify PayGate that information has been received
         echo 'OK';
 
         $errors = false;
@@ -364,8 +342,8 @@ class ControllerExtensionPaymentPaygate extends Controller
         $checkSumParams     = '';
         $notify_checksum    = '';
         $post_data          = '';
-        if ( !$errors ) {
 
+        if ( !$errors ) {
             foreach ( $_POST as $key => $val ) {
                 if ( $key == 'PAYGATE_ID' ) {
                     $checkSumParams .= $this->config->get( 'payment_paygate_merchant_id' );
@@ -391,9 +369,9 @@ class ControllerExtensionPaymentPaygate extends Controller
                     $pay_method_desc = ', using a payment method of ' . $val;
                 }
             }
+
             $checkSumParams .= $this->config->get( 'payment_paygate_merchant_key' );
             $checkSumParams = md5( $checkSumParams );
-
             if ( $checkSumParams != $notify_checksum ) {
                 $errors = true;
             }
@@ -414,6 +392,7 @@ class ControllerExtensionPaymentPaygate extends Controller
                     $orderStatusId = 7;
                     $statusDesc    = 'cancelled';
                 }
+
                 $resultsComment = "Notify from PayGate with a status of " . $statusDesc . $pay_method_desc;
                 $this->load->model( 'checkout/order' );
                 $this->model_checkout_order->addOrderHistory( $order_id, $orderStatusId, $resultsComment, true );
@@ -423,11 +402,25 @@ class ControllerExtensionPaymentPaygate extends Controller
 
     public function confirm()
     {
-
         if ( $this->session->data['payment_method']['code'] == 'paygate' ) {
             $this->load->model( 'checkout/order' );
             $comment = 'Redirected to PayGate';
             $this->model_checkout_order->addOrderHistory( $this->session->data['order_id'], $this->config->get( 'payment_paygate_order_status_id' ), $comment, true );
         }
+    }
+
+    public function before_redirect()
+    {
+        $json = array();
+
+        if ( $this->session->data['payment_method']['code'] == 'paygate' ) {
+            $this->load->model( 'checkout/order' );
+            $comment = 'Before Redirected to PayGate';
+            $this->model_checkout_order->addOrderHistory( $this->session->data['order_id'], 1 );
+            $json['answer'] = 'success';
+        }
+
+        $this->response->addHeader( 'Content-Type: application/json' );
+        $this->response->setOutput( json_encode( $json ) );
     }
 }
