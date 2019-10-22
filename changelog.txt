@@ -1,0 +1,12 @@
+=====================================
+Date	  : Version: Description
+=====================================
+
+2017-10-18: v3.0.0 : Initial release.
+2018-06-29: v3.0.1 : Fix minor bug with GeoZone.
+                     Fix auto install.
+2018-11-27: v3.0.2 : Include order number in reference.
+                     Improve order processing workflow.
+                     Handle email not set on checkout.
+2019-10-22: v3.0.3 : Retain checkout cart on failed transaction.
+                     Test with 3.0.3.2.

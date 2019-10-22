@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2018 PayGate (Pty) Ltd
+ * Copyright (c) 2019 PayGate (Pty) Ltd
  *
  * Author: App Inlet (Pty) Ltd
  *
@@ -38,17 +38,19 @@ class ControllerExtensionPaymentPaygate extends Controller
                 $currency = filter_var( $this->currency->getCode(), FILTER_SANITIZE_STRING );
             }
 
-            $returnUrl       = filter_var( $this->url->link( 'extension/payment/paygate/paygate_return', '', true ), FILTER_SANITIZE_URL );
-            $transDate       = filter_var( date( 'Y-m-d H:i:s' ), FILTER_SANITIZE_STRING );
-            $locale          = filter_var( 'en', FILTER_SANITIZE_STRING );
-            $country         = filter_var( $order_info['payment_iso_code_3'], FILTER_SANITIZE_STRING );
-            $email           = filter_var( $order_info['email'], FILTER_SANITIZE_EMAIL );
+            $returnUrl = filter_var( $this->url->link( 'extension/payment/paygate/paygate_return', '', true ), FILTER_SANITIZE_URL );
+            $transDate = filter_var( date( 'Y-m-d H:i:s' ), FILTER_SANITIZE_STRING );
+            $locale    = filter_var( 'en', FILTER_SANITIZE_STRING );
+            $country   = filter_var( $order_info['payment_iso_code_3'], FILTER_SANITIZE_STRING );
+            $email     = filter_var( $order_info['email'], FILTER_SANITIZE_EMAIL );
+            // Check if email empty due to some custom themes displaying this on the same page
+            $email           = empty( $email ) ? $this->config->get( 'config_email' ) : $email;
             $payMethod       = '';
             $payMethodDetail = '';
             $notifyUrl       = filter_var( $this->url->link( 'extension/payment/paygate/notify_handler', '', true ), FILTER_SANITIZE_URL );
             $userField1      = $order_info['order_id'];
             $userField2      = '';
-            $userField3      = 'opencart-v3.0.2';
+            $userField3      = 'opencart-v3.0.3.2';
             $doVault         = '';
             $vaultID         = '';
             $encryption_key  = $this->config->get( 'payment_paygate_merchant_key' );
@@ -166,7 +168,6 @@ class ControllerExtensionPaymentPaygate extends Controller
         $status     = '';
 
         if ( isset( $this->session->data['order_id'] ) ) {
-            $this->cart->clear();
 
             // Add to activity log
             $this->load->model( 'account/activity' );
@@ -263,6 +264,9 @@ class ControllerExtensionPaymentPaygate extends Controller
             }
 
             $this->load->model( 'checkout/order' );
+            if ( $statusDesc == 'approved' ) {
+                $this->cart->clear();
+            }
             $this->model_checkout_order->addOrderHistory( $this->session->data['order_id'], $orderStatusId, $resultsComment, true );
             unset( $this->session->data['shipping_method'] );
             unset( $this->session->data['shipping_methods'] );
