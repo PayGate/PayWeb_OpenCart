@@ -1,0 +1,43 @@
+<script>
+  $('head').append('<link rel="stylesheet" href="catalog/view/theme/paygate/stylesheet/stylesheet.css">');
+</script>
+{#<div id="pw3PayPopup">#}
+    <div id="pw3PayPopupContent">
+        <form name="form" id="pw3form" class="form-horizontal text-left"
+              action="{{ action }}" method="post">
+            {% if pay_methods %}
+                <p><strong>Select your preferred payment type:</strong></p>
+                <table>
+                    <thead><tr><td></td><td></td></tr></thead>
+                    <tbody>
+                    {% for pay_method in pay_methods %}
+                        <tr>
+                            <td>
+                                <label style="margin-left: 30px;">
+                                    <div class="radio">
+                                        {% if loop.first %}
+                                            <input type="radio" name="paygate_pay_method" value="{{ pay_method.method }}" checked="checked">
+                                        {% else %}
+                                            <input type="radio" name="paygate_pay_method" value="{{ pay_method.method }}">
+                                        {% endif %}
+                                        {{ pay_method.title }}
+                                    </div>
+                                </label>
+                            </td>
+                            <td>
+                                <img height="20px" src="{{ pay_method.img }}" alt="{{ pay_method.title }}">
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+            <div class="buttons">
+                <div class="pull-right"><input type="submit" value="{{ button_confirm }}" id="button-confirm"
+                                               class="btn btn-primary"/>
+                </div>
+            </div>
+        </form>
+    </div>
+{#</div>#}
+
