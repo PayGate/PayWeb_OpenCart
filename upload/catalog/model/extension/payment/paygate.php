@@ -1,9 +1,9 @@
 <?php
 /*
- * Copyright (c) 2019 PayGate (Pty) Ltd
+ * Copyright (c) 2020 PayGate (Pty) Ltd
  *
  * Author: App Inlet (Pty) Ltd
- * 
+ *
  * Released under the GNU General Public License
  */
 
@@ -36,6 +36,24 @@ class ModelExtensionPaymentPaygate extends Model
                 'sort_order' => $this->config->get( 'payment_paygate_sort_order' ),
             );
         }
+
+        // Add enabled payment methods as checkout options
+        $paymethods = [
+            'creditcardmethod'   => 'Card',
+            'banktransfermethod' => 'SiD Secure EFT',
+            'zappermethod'       => 'Zapper',
+            'mobicredmethod'     => 'Mobicred',
+            'momopaymethod'      => 'MoMoPay',
+            'masterpassmethod'   => 'MasterPass',
+        ];
+        $pm = [];
+        foreach ( $paymethods as $key => $paymethod ) {
+            $setting = 'payment_paygate_' . $key;
+            if ( $this->config->get( $setting ) === 'yes' ) {
+                $pm[] = ['method' => $key, 'title' => $paymethod];
+            }
+        }
+        $method_data['pay_methods'] = $pm;
 
         return $method_data;
     }

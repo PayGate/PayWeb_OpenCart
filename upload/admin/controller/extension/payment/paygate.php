@@ -1,11 +1,13 @@
 <?php
+
 /*
- * Copyright (c) 2019 PayGate (Pty) Ltd
+ * Copyright (c) 2020 PayGate (Pty) Ltd
  *
  * Author: App Inlet (Pty) Ltd
  *
  * Released under the GNU General Public License
  */
+
 class ControllerExtensionPaymentPaygate extends Controller
 {
 
@@ -20,7 +22,13 @@ class ControllerExtensionPaymentPaygate extends Controller
         if (  ( $this->request->server['REQUEST_METHOD'] == 'POST' ) && $this->validate() ) {
             $this->model_setting_setting->editSetting( 'payment_paygate', $this->request->post );
             $this->session->data['success'] = $this->language->get( 'text_success' );
-            $this->response->redirect( $this->url->link( 'marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment', true ) );
+            $this->response->redirect(
+                $this->url->link(
+                    'marketplace/extension',
+                    'user_token=' . $this->session->data['user_token'] . '&type=payment',
+                    true
+                )
+            );
         }
 
         $data['heading_title'] = $this->language->get( 'heading_title' );
@@ -38,6 +46,8 @@ class ControllerExtensionPaymentPaygate extends Controller
         $data['entry_geo_zone']         = $this->language->get( 'entry_geo_zone' );
         $data['entry_status']           = $this->language->get( 'entry_status' );
         $data['entry_sort_order']       = $this->language->get( 'entry_sort_order' );
+        $data['entry_notify_redirect']  = $this->language->get( 'entry_notify_redirect' );
+        $data['entry_iframe']           = $this->language->get( 'entry_iframe' );
 
         $data['tab_general']      = $this->language->get( 'tab_general' );
         $data['tab_order_status'] = $this->language->get( 'tab_order_status' );
@@ -65,16 +75,32 @@ class ControllerExtensionPaymentPaygate extends Controller
 
         $data['breadcrumbs'][] = array(
             'text' => $this->language->get( 'text_extension' ),
-            'href' => $this->url->link( 'marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment', true ),
+            'href' => $this->url->link(
+                'marketplace/extension',
+                'user_token=' . $this->session->data['user_token'] . '&type=payment',
+                true
+            ),
         );
 
         $data['breadcrumbs'][] = array(
             'text' => $this->language->get( 'heading_title' ),
-            'href' => $this->url->link( 'extension/payment/paygate', 'user_token=' . $this->session->data['user_token'], true ),
+            'href' => $this->url->link(
+                'extension/payment/paygate',
+                'user_token=' . $this->session->data['user_token'],
+                true
+            ),
         );
 
-        $data['action'] = $this->url->link( 'extension/payment/paygate', 'user_token=' . $this->session->data['user_token'], true );
-        $data['cancel'] = $this->url->link( 'marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment', true );
+        $data['action'] = $this->url->link(
+            'extension/payment/paygate',
+            'user_token=' . $this->session->data['user_token'],
+            true
+        );
+        $data['cancel'] = $this->url->link(
+            'marketplace/extension',
+            'user_token=' . $this->session->data['user_token'] . '&type=payment',
+            true
+        );
 
         if ( isset( $this->request->post['payment_paygate_total'] ) ) {
             $data['payment_paygate_total'] = $this->request->post['payment_paygate_total'];
@@ -91,19 +117,25 @@ class ControllerExtensionPaymentPaygate extends Controller
         if ( isset( $this->request->post['payment_paygate_success_order_status_id'] ) ) {
             $data['payment_paygate_success_order_status_id'] = $this->request->post['payment_paygate_success_order_status_id'];
         } else {
-            $data['payment_paygate_success_order_status_id'] = $this->config->get( 'payment_paygate_success_order_status_id' );
+            $data['payment_paygate_success_order_status_id'] = $this->config->get(
+                'payment_paygate_success_order_status_id'
+            );
         }
 
         if ( isset( $this->request->post['payment_paygate_failed_order_status_id'] ) ) {
             $data['payment_paygate_failed_order_status_id'] = $this->request->post['payment_paygate_failed_order_status_id'];
         } else {
-            $data['payment_paygate_failed_order_status_id'] = $this->config->get( 'payment_paygate_failed_order_status_id' );
+            $data['payment_paygate_failed_order_status_id'] = $this->config->get(
+                'payment_paygate_failed_order_status_id'
+            );
         }
 
         if ( isset( $this->request->post['payment_paygate_cancelled_order_status_id'] ) ) {
             $data['payment_paygate_cancelled_order_status_id'] = $this->request->post['payment_paygate_cancelled_order_status_id'];
         } else {
-            $data['payment_paygate_cancelled_order_status_id'] = $this->config->get( 'payment_paygate_cancelled_order_status_id' );
+            $data['payment_paygate_cancelled_order_status_id'] = $this->config->get(
+                'payment_paygate_cancelled_order_status_id'
+            );
         }
 
         $this->load->model( 'localisation/order_status' );
@@ -142,6 +174,54 @@ class ControllerExtensionPaymentPaygate extends Controller
             $data['payment_paygate_merchant_key'] = $this->request->post['payment_paygate_merchant_key'];
         } else {
             $data['payment_paygate_merchant_key'] = $this->config->get( 'payment_paygate_merchant_key' );
+        }
+
+        if ( isset( $this->request->post['payment_paygate_notifyredirect'] ) ) {
+            $data['payment_paygate_notifyredirect'] = $this->request->post['payment_paygate_notifyredirect'];
+        } else {
+            $data['payment_paygate_notifyredirect'] = $this->config->get( 'payment_paygate_notifyredirect' );
+        }
+
+        if ( isset( $this->request->post['payment_paygate_iframe'] ) ) {
+            $data['payment_paygate_iframe'] = $this->request->post['payment_paygate_iframe'];
+        } else {
+            $data['payment_paygate_iframe'] = $this->config->get( 'payment_paygate_iframe' );
+        }
+
+        if ( isset( $this->request->post['payment_paygate_creditcardmethod'] ) ) {
+            $data['payment_paygate_creditcardmethod'] = $this->request->post['payment_paygate_creditcardmethod'];
+        } else {
+            $data['payment_paygate_creditcardmethod'] = $this->config->get( 'payment_paygate_creditcardmethod' );
+        }
+
+        if ( isset( $this->request->post['payment_paygate_banktransfermethod'] ) ) {
+            $data['payment_paygate_banktransfermethod'] = $this->request->post['payment_paygate_banktransfermethod'];
+        } else {
+            $data['payment_paygate_banktransfermethod'] = $this->config->get( 'payment_paygate_banktransfermethod' );
+        }
+
+        if ( isset( $this->request->post['payment_paygate_zappermethod'] ) ) {
+            $data['payment_paygate_zappermethod'] = $this->request->post['payment_paygate_zappermethod'];
+        } else {
+            $data['payment_paygate_zappermethod'] = $this->config->get( 'payment_paygate_zappermethod' );
+        }
+
+        if ( isset( $this->request->post['payment_paygate_mobicredmethod'] ) ) {
+            $data['payment_paygate_mobicredmethod'] = $this->request->post['payment_paygate_mobicredmethod'];
+        } else {
+            $data['payment_paygate_mobicredmethod'] = $this->config->get( 'payment_paygate_mobicredmethod' );
+        }
+
+        if ( isset( $this->request->post['payment_paygate_momopaymethod'] ) ) {
+            $data['payment_paygate_momopaymethod'] = $this->request->post['payment_paygate_momopaymethod'];
+        } else {
+            $data['payment_paygate_momopaymethod'] = $this->config->get( 'payment_paygate_momopaymethod' );
+        }
+
+        if ( isset( $this->request->post['payment_paygate_masterpassmethod'] ) ) {
+            $data['payment_paygate_masterpassmethod'] = $this->request->post['payment_paygate_masterpassmethod'];
+        } else {
+            $data['payment_paygate_masterpassmethod'] = $this->config->get( 'payment_paygate_masterpassmethod' );
         }
 
         $data['header']      = $this->load->controller( 'common/header' );
