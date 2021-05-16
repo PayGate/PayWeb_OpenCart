@@ -47,7 +47,6 @@ class ControllerExtensionPaymentPaygate extends Controller
         $data['entry_status']           = $this->language->get( 'entry_status' );
         $data['entry_sort_order']       = $this->language->get( 'entry_sort_order' );
         $data['entry_notify_redirect']  = $this->language->get( 'entry_notify_redirect' );
-        $data['entry_iframe']           = $this->language->get( 'entry_iframe' );
 
         $data['tab_general']      = $this->language->get( 'tab_general' );
         $data['tab_order_status'] = $this->language->get( 'tab_order_status' );
@@ -182,12 +181,6 @@ class ControllerExtensionPaymentPaygate extends Controller
             $data['payment_paygate_notifyredirect'] = $this->config->get( 'payment_paygate_notifyredirect' );
         }
 
-        if ( isset( $this->request->post['payment_paygate_iframe'] ) ) {
-            $data['payment_paygate_iframe'] = $this->request->post['payment_paygate_iframe'];
-        } else {
-            $data['payment_paygate_iframe'] = $this->config->get( 'payment_paygate_iframe' );
-        }
-
         if ( isset( $this->request->post['payment_paygate_creditcardmethod'] ) ) {
             $data['payment_paygate_creditcardmethod'] = $this->request->post['payment_paygate_creditcardmethod'];
         } else {
@@ -204,6 +197,11 @@ class ControllerExtensionPaymentPaygate extends Controller
             $data['payment_paygate_zappermethod'] = $this->request->post['payment_paygate_zappermethod'];
         } else {
             $data['payment_paygate_zappermethod'] = $this->config->get( 'payment_paygate_zappermethod' );
+        }
+        if ( isset( $this->request->post['payment_paygate_snapscanmethod'] ) ) {
+            $data['payment_paygate_snapscanmethod'] = $this->request->post['payment_paygate_snapscanmethod'];
+        } else {
+            $data['payment_paygate_snapscanmethod'] = $this->config->get( 'payment_paygate_snapscanmethod' );
         }
 
         if ( isset( $this->request->post['payment_paygate_mobicredmethod'] ) ) {

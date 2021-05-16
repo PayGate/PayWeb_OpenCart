@@ -40,6 +40,10 @@ class ControllerExtensionPaymentPaygate extends Controller
                     'title' => 'Zapper',
                     'img'   => $imgs . 'zapper.svg',
                 ],
+                'snapscanmethod'       => [
+                    'title' => 'SnapScan',
+                    'img'   => $imgs . 'snapscan.svg',
+                ],
                 'mobicredmethod'     => [
                     'title' => 'Mobicred',
                     'img'   => $imgs . 'mobicred.svg',
@@ -88,6 +92,9 @@ class ControllerExtensionPaymentPaygate extends Controller
                 case 'zappermethod':
                     $PAY_METHOD_DETAIL = 'Zapper';
                     break;
+                case 'snapscanmethod':
+                    $PAY_METHOD_DETAIL = 'SnapScan';
+                    break;
                 case 'mobicredmethod':
                     $PAY_METHOD_DETAIL = 'Mobicred';
                     break;
@@ -115,7 +122,6 @@ class ControllerExtensionPaymentPaygate extends Controller
             $reference = filter_var( $order_info['order_id'], FILTER_SANITIZE_STRING );
             $amount    = filter_var( $preAmount, FILTER_SANITIZE_NUMBER_INT );
             $currency  = '';
-            $useIframe = filter_var( $this->config->get( 'payment_paygate_iframe' ), FILTER_SANITIZE_STRING ) === 'iframe';
 
             if ( $this->config->get( 'config_currency' ) != '' ) {
                 $currency = filter_var( $this->config->get( 'config_currency' ), FILTER_SANITIZE_STRING );
@@ -265,34 +271,8 @@ class ControllerExtensionPaymentPaygate extends Controller
         }
 
         if ( $order_info['payment_code'] === 'paygate' ) {
-            if ( $useIframe ) {
-                echo <<<HTML
- <script type="text/javascript">
- let style = document.createElement('link');
- style.setAttribute('rel', 'stylesheet');
- style.setAttribute('href', 'catalog/view/theme/paygate/stylesheet/stylesheet.css');
- document.getElementsByTagName('head')[0].appendChild(style)
- </script>
- <div id="pw3PayPopup">
-     <div id="pw3PayPopupContent">
-         <form name="form" id="pw3form" class="form-horizontal text-left"
-               action="https://secure.paygate.co.za/payweb3/process.trans" method="post" target="pw3Iframe">
-             <input type="hidden" name="PAY_REQUEST_ID" value="$data[PAY_REQUEST_ID]"/>
-             <input type="hidden" name="CHECKSUM" value="$data[CHECKSUM]"/>
-             <div class="buttons" hidden>
-                 <div class="pull-right"><input type="submit" value="Confirm" id="button-confirm"
-                                                class="btn btn-primary"/>
-                 </div>
-             </div>
-         </form>
-         <iframe name="pw3Iframe" id="pw3PayPopupFrame" src="#"></iframe>
-         <script type="text/javascript">document.getElementById("pw3form").submit()</script>
-     </div>
- </div>
-HTML;
-                return;
-            } else {
-                echo <<<HTML
+            $this->cart->clear();
+            echo <<<HTML
  <form name="form" id="pw3form" class="form-horizontal text-left"
                action="https://secure.paygate.co.za/payweb3/process.trans" method="post">
              <input type="hidden" name="PAY_REQUEST_ID" value="$data[PAY_REQUEST_ID]"/>
@@ -308,13 +288,8 @@ HTML;
          <script type="text/javascript">$("#button-confirm").trigger('click');</script>
 HTML;
                 return;
-            }
         } else {
-            if ( $useIframe ) {
-                return $this->load->view( 'extension/payment/paygate', $data );
-            } else {
-                return $this->load->view( 'extension/payment/paygate_redirect', $data );
-            }
+            return $this->load->view( 'extension/payment/paygate_redirect', $data );
         }
     }
 
@@ -357,6 +332,7 @@ HTML;
             $this->load->model( 'account/activity' );
             $this->load->model( 'checkout/order' );
             $order = $this->model_checkout_order->getOrder( $orderId );
+            $products = $this->model_checkout_order->getOrderProducts( $orderId );
 
             if ( $this->customer->isLogged() ) {
                 $activity_data = array(
@@ -454,9 +430,20 @@ HTML;
                 $resultsComment = 'Transaction status verification failed. No transaction status. Please contact the shop owner to confirm transaction status.';
             }
 
-            if ( $statusDesc == 'approved' ) {
-                $this->cart->clear();
+            if ( $statusDesc !== 'approved' ) {
+                // Restore the cart which has already been cleared
+                if(is_array($products)){
+                    foreach ($products as $product){
+                        $options = $this->model_checkout_order->getOrderOptions($orderId, $product['order_product_id']);
+                        $option = [];
+                        if(is_array($options) && count($options) > 0){
+                            $option = $options;
+                        }
+                        $this->cart->add($product['product_id'], $product['quantity'], $option);
+                    }
+                }
             }
+
             if ( $useRedirect ) {
                 $this->model_checkout_order->addOrderHistory(
                     $orderId,

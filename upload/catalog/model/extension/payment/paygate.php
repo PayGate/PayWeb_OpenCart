@@ -42,6 +42,7 @@ class ModelExtensionPaymentPaygate extends Model
             'creditcardmethod'   => 'Card',
             'banktransfermethod' => 'SiD Secure EFT',
             'zappermethod'       => 'Zapper',
+            'snapscanmethod'       => 'SnapScan',
             'mobicredmethod'     => 'Mobicred',
             'momopaymethod'      => 'MoMoPay',
             'masterpassmethod'   => 'MasterPass',
