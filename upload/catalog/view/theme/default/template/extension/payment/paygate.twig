@@ -11,7 +11,7 @@
 <div id="pw3PayPopup">
     <div id="pw3PayPopupContent">
         <form name="form" id="pw3form" class="form-horizontal text-left"
-              action="{{ 'https://secure.paygate.co.za/payweb3/process.trans' }}" method="post" target="pw3Iframe">
+              action="{{ 'https://secure.paygate.co.za/payweb3/process.trans' }}" method="post" >
             <input type="hidden" name="PAY_REQUEST_ID" value="{{ PAY_REQUEST_ID }}"/>
             <input type="hidden" name="CHECKSUM" value="{{ CHECKSUM }}"/>
             <div class="buttons">
@@ -20,7 +20,6 @@
                 </div>
             </div>
         </form>
-        <iframe name="pw3Iframe" id="pw3PayPopupFrame" src="#"></iframe>
         <script type="text/javascript">{{ document.getElementById("pw3form").submit() }}</script>
         <script type="text/javascript">$("#button-confirm").hide();</script>
         <script type="text/javascript">$("#button-confirm").trigger('click');</script>
