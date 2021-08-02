@@ -31,7 +31,7 @@ class ModelExtensionPaymentPaygate extends Model
         if ( $status ) {
             $method_data = array(
                 'code'       => 'paygate',
-                'title'      => $this->language->get( 'text_paygate_checkout' ),
+                'title'      => $this->language->get( 'text_paygate_checkout' ) . ' <img src="'.$this->config->get('config_ssl').'catalog/view/theme/default/image/paygate.png" alt="PayGate" title="PayGate" style="border: 0;" />',
                 'terms'      => '',
                 'sort_order' => $this->config->get( 'payment_paygate_sort_order' ),
             );
