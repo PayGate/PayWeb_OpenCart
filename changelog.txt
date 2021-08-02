@@ -1,6 +1,12 @@
 =====================================
 Date	  : Version: Description
 =====================================
+2021-07-20: v3.0.6 : Bug fixes and code quality improvements.
+                     Fix logo issue on email and admin order detail page.
+                     Improve display of payment redirect page.
+                     Remove unused files and code.                     
+                     Fix order declined not updating order status.
+
 2021-05-16: v3.0.5 : Tested on 3.0.3.7.
                      Improve clear or restore cart handling.
                      Remove iFrame option.

@@ -12,32 +12,52 @@ class ControllerExtensionPaymentPaygate extends Controller
 {
 
     private $error = array();
+	
+	const PAYMENT_URL = "marketplace/extension";
+	const PAYGATE_LANGUAGE = "extension/payment/paygate";
+	
+	public function getToken(){
+		return $this->session->data['user_token'];
+	}
+	
+	public function formatPaymentUrl($path){
+		$token = $this->getToken();
+		return $this->url->link(
+			$path,
+			'user_token=' . $token . '&type=payment',
+			true
+		);
+	}
+	
+	public function formatUrl($path){
+		$token = $this->getToken();
+		return $this->url->link(
+			$path,
+			"user_token=$token",
+			true
+		);
+	}
 
     public function index()
     {
-        $this->load->language( 'extension/payment/paygate' );
+        $this->load->language( self::PAYGATE_LANGUAGE );
         $this->document->setTitle( $this->language->get( 'heading_title' ) );
         $this->load->model( 'setting/setting' );
+		$this->load->model( 'localisation/order_status' );
+		$this->load->model( 'localisation/geo_zone' );
 
         if (  ( $this->request->server['REQUEST_METHOD'] == 'POST' ) && $this->validate() ) {
             $this->model_setting_setting->editSetting( 'payment_paygate', $this->request->post );
             $this->session->data['success'] = $this->language->get( 'text_success' );
-            $this->response->redirect(
-                $this->url->link(
-                    'marketplace/extension',
-                    'user_token=' . $this->session->data['user_token'] . '&type=payment',
-                    true
-                )
-            );
+			$url = $this->formatPaymentUrl(self::PAYMENT_URL);
+            $this->response->redirect($url);
         }
 
         $data['heading_title'] = $this->language->get( 'heading_title' );
-
         $data['text_edit']      = $this->language->get( 'text_edit' );
         $data['text_enabled']   = $this->language->get( 'text_enabled' );
         $data['text_disabled']  = $this->language->get( 'text_disabled' );
         $data['text_all_zones'] = $this->language->get( 'text_all_zones' );
-
         $data['entry_order_status']     = $this->language->get( 'entry_order_status' );
         $data['entry_success_status']   = $this->language->get( 'entry_success_status' );
         $data['entry_failed_status']    = $this->language->get( 'entry_failed_status' );
@@ -47,191 +67,67 @@ class ControllerExtensionPaymentPaygate extends Controller
         $data['entry_status']           = $this->language->get( 'entry_status' );
         $data['entry_sort_order']       = $this->language->get( 'entry_sort_order' );
         $data['entry_notify_redirect']  = $this->language->get( 'entry_notify_redirect' );
-
         $data['tab_general']      = $this->language->get( 'tab_general' );
         $data['tab_order_status'] = $this->language->get( 'tab_order_status' );
-
         $data['entry_merchant_id']  = $this->language->get( 'entry_merchant_id' );
         $data['entry_merchant_key'] = $this->language->get( 'entry_merchant_key' );
-
         $data['help_total'] = $this->language->get( 'help_total' );
-
         $data['button_save']   = $this->language->get( 'button_save' );
         $data['button_cancel'] = $this->language->get( 'button_cancel' );
-
-        if ( isset( $this->error['warning'] ) ) {
-            $data['error_warning'] = $this->error['warning'];
-        } else {
-            $data['error_warning'] = '';
-        }
-
+        $data['error_warning'] = isset($this->error['warning'])?$data['error_warning']:'';
         $data['breadcrumbs'] = array();
-
+		
         $data['breadcrumbs'][] = array(
             'text' => $this->language->get( 'text_home' ),
-            'href' => $this->url->link( 'common/dashboard', 'user_token=' . $this->session->data['user_token'], true ),
+            'href' => $this->formatUrl('common/dashboard'),
         );
 
         $data['breadcrumbs'][] = array(
             'text' => $this->language->get( 'text_extension' ),
-            'href' => $this->url->link(
-                'marketplace/extension',
-                'user_token=' . $this->session->data['user_token'] . '&type=payment',
-                true
-            ),
+            'href' => $this->formatPaymentUrl(self::PAYMENT_URL),
         );
 
         $data['breadcrumbs'][] = array(
             'text' => $this->language->get( 'heading_title' ),
-            'href' => $this->url->link(
-                'extension/payment/paygate',
-                'user_token=' . $this->session->data['user_token'],
-                true
-            ),
-        );
+            'href' => $this->formatUrl(self::PAYGATE_LANGUAGE),
+        );	
 
-        $data['action'] = $this->url->link(
-            'extension/payment/paygate',
-            'user_token=' . $this->session->data['user_token'],
-            true
-        );
-        $data['cancel'] = $this->url->link(
-            'marketplace/extension',
-            'user_token=' . $this->session->data['user_token'] . '&type=payment',
-            true
-        );
-
-        if ( isset( $this->request->post['payment_paygate_total'] ) ) {
-            $data['payment_paygate_total'] = $this->request->post['payment_paygate_total'];
-        } else {
-            $data['payment_paygate_total'] = $this->config->get( 'payment_paygate_total' );
-        }
-
-        if ( isset( $this->request->post['payment_paygate_order_status_id'] ) ) {
-            $data['payment_paygate_order_status_id'] = $this->request->post['payment_paygate_order_status_id'];
-        } else {
-            $data['payment_paygate_order_status_id'] = $this->config->get( 'payment_paygate_order_status_id' );
-        }
-
-        if ( isset( $this->request->post['payment_paygate_success_order_status_id'] ) ) {
-            $data['payment_paygate_success_order_status_id'] = $this->request->post['payment_paygate_success_order_status_id'];
-        } else {
-            $data['payment_paygate_success_order_status_id'] = $this->config->get(
-                'payment_paygate_success_order_status_id'
-            );
-        }
-
-        if ( isset( $this->request->post['payment_paygate_failed_order_status_id'] ) ) {
-            $data['payment_paygate_failed_order_status_id'] = $this->request->post['payment_paygate_failed_order_status_id'];
-        } else {
-            $data['payment_paygate_failed_order_status_id'] = $this->config->get(
-                'payment_paygate_failed_order_status_id'
-            );
-        }
-
-        if ( isset( $this->request->post['payment_paygate_cancelled_order_status_id'] ) ) {
-            $data['payment_paygate_cancelled_order_status_id'] = $this->request->post['payment_paygate_cancelled_order_status_id'];
-        } else {
-            $data['payment_paygate_cancelled_order_status_id'] = $this->config->get(
-                'payment_paygate_cancelled_order_status_id'
-            );
-        }
-
-        $this->load->model( 'localisation/order_status' );
-
+        $data['action'] = $this->formatUrl(self::PAYGATE_LANGUAGE);
+        $data['cancel'] = $this->formatPaymentUrl(self::PAYMENT_URL);
+		$data['payment_paygate_total'] = $this->checkPostValue("payment_paygate_total");
+		$data['payment_paygate_order_status_id'] = $this->checkPostValue("payment_paygate_order_status_id");
+		$data['payment_paygate_success_order_status_id'] = $this->checkPostValue("payment_paygate_success_order_status_id");
+		$data['payment_paygate_failed_order_status_id'] = $this->checkPostValue("payment_paygate_failed_order_status_id");
+		$data['payment_paygate_cancelled_order_status_id'] = $this->checkPostValue("payment_paygate_cancelled_order_status_id");
         $data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
-
-        if ( isset( $this->request->post['payment_paygate_geo_zone_id'] ) ) {
-            $data['payment_paygate_geo_zone_id'] = $this->request->post['payment_paygate_geo_zone_id'];
-        } else {
-            $data['payment_paygate_geo_zone_id'] = $this->config->get( 'payment_paygate_geo_zone_id' );
-        }
-
-        $this->load->model( 'localisation/geo_zone' );
-
         $data['geo_zones'] = $this->model_localisation_geo_zone->getGeoZones();
-
-        if ( isset( $this->request->post['payment_paygate_status'] ) ) {
-            $data['payment_paygate_status'] = $this->request->post['payment_paygate_status'];
-        } else {
-            $data['payment_paygate_status'] = $this->config->get( 'payment_paygate_status' );
-        }
-
-        if ( isset( $this->request->post['payment_paygate_sort_order'] ) ) {
-            $data['payment_paygate_sort_order'] = $this->request->post['payment_paygate_sort_order'];
-        } else {
-            $data['payment_paygate_sort_order'] = $this->config->get( 'payment_paygate_sort_order' );
-        }
-
-        if ( isset( $this->request->post['payment_paygate_merchant_id'] ) ) {
-            $data['payment_paygate_merchant_id'] = $this->request->post['payment_paygate_merchant_id'];
-        } else {
-            $data['payment_paygate_merchant_id'] = $this->config->get( 'payment_paygate_merchant_id' );
-        }
-
-        if ( isset( $this->request->post['payment_paygate_merchant_key'] ) ) {
-            $data['payment_paygate_merchant_key'] = $this->request->post['payment_paygate_merchant_key'];
-        } else {
-            $data['payment_paygate_merchant_key'] = $this->config->get( 'payment_paygate_merchant_key' );
-        }
-
-        if ( isset( $this->request->post['payment_paygate_notifyredirect'] ) ) {
-            $data['payment_paygate_notifyredirect'] = $this->request->post['payment_paygate_notifyredirect'];
-        } else {
-            $data['payment_paygate_notifyredirect'] = $this->config->get( 'payment_paygate_notifyredirect' );
-        }
-
-        if ( isset( $this->request->post['payment_paygate_creditcardmethod'] ) ) {
-            $data['payment_paygate_creditcardmethod'] = $this->request->post['payment_paygate_creditcardmethod'];
-        } else {
-            $data['payment_paygate_creditcardmethod'] = $this->config->get( 'payment_paygate_creditcardmethod' );
-        }
-
-        if ( isset( $this->request->post['payment_paygate_banktransfermethod'] ) ) {
-            $data['payment_paygate_banktransfermethod'] = $this->request->post['payment_paygate_banktransfermethod'];
-        } else {
-            $data['payment_paygate_banktransfermethod'] = $this->config->get( 'payment_paygate_banktransfermethod' );
-        }
-
-        if ( isset( $this->request->post['payment_paygate_zappermethod'] ) ) {
-            $data['payment_paygate_zappermethod'] = $this->request->post['payment_paygate_zappermethod'];
-        } else {
-            $data['payment_paygate_zappermethod'] = $this->config->get( 'payment_paygate_zappermethod' );
-        }
-        if ( isset( $this->request->post['payment_paygate_snapscanmethod'] ) ) {
-            $data['payment_paygate_snapscanmethod'] = $this->request->post['payment_paygate_snapscanmethod'];
-        } else {
-            $data['payment_paygate_snapscanmethod'] = $this->config->get( 'payment_paygate_snapscanmethod' );
-        }
-
-        if ( isset( $this->request->post['payment_paygate_mobicredmethod'] ) ) {
-            $data['payment_paygate_mobicredmethod'] = $this->request->post['payment_paygate_mobicredmethod'];
-        } else {
-            $data['payment_paygate_mobicredmethod'] = $this->config->get( 'payment_paygate_mobicredmethod' );
-        }
-
-        if ( isset( $this->request->post['payment_paygate_momopaymethod'] ) ) {
-            $data['payment_paygate_momopaymethod'] = $this->request->post['payment_paygate_momopaymethod'];
-        } else {
-            $data['payment_paygate_momopaymethod'] = $this->config->get( 'payment_paygate_momopaymethod' );
-        }
-
-        if ( isset( $this->request->post['payment_paygate_masterpassmethod'] ) ) {
-            $data['payment_paygate_masterpassmethod'] = $this->request->post['payment_paygate_masterpassmethod'];
-        } else {
-            $data['payment_paygate_masterpassmethod'] = $this->config->get( 'payment_paygate_masterpassmethod' );
-        }
-
+		$data['payment_paygate_status'] = $this->checkPostValue("payment_paygate_status");
+		$data['payment_paygate_sort_order'] = $this->checkPostValue("payment_paygate_sort_order");
+		$data['payment_paygate_merchant_id'] = $this->checkPostValue("payment_paygate_merchant_id");
+		$data['payment_paygate_merchant_key'] = $this->checkPostValue("payment_paygate_merchant_key");
+		$data['payment_paygate_notifyredirect'] = $this->checkPostValue("payment_paygate_notifyredirect");
+		$data['payment_paygate_creditcardmethod'] = $this->checkPostValue("payment_paygate_creditcardmethod");
+		$data['payment_paygate_banktransfermethod'] = $this->checkPostValue("payment_paygate_banktransfermethod");
+		$data['payment_paygate_zappermethod'] = $this->checkPostValue("payment_paygate_zappermethod");
+		$data['payment_paygate_snapscanmethod'] = $this->checkPostValue("payment_paygate_snapscanmethod");
+		$data['payment_paygate_mobicredmethod'] = $this->checkPostValue("payment_paygate_mobicredmethod");
+		$data['payment_paygate_momopaymethod'] = $this->checkPostValue("payment_paygate_momopaymethod");
+		$data['payment_paygate_geo_zone_id'] = $this->checkPostValue("payment_paygate_geo_zone_id");
+		$data['payment_paygate_masterpassmethod'] = $this->checkPostValue("payment_paygate_masterpassmethod");
         $data['header']      = $this->load->controller( 'common/header' );
         $data['column_left'] = $this->load->controller( 'common/column_left' );
         $data['footer']      = $this->load->controller( 'common/footer' );
 
-        $this->response->setOutput( $this->load->view( 'extension/payment/paygate', $data ) );
+        $this->response->setOutput( $this->load->view( self::PAYGATE_LANGUAGE, $data ) );
     }
+	
+	public function checkPostValue($var){
+		return isset($this->request->post["$var"])?$this->request->post["$var"]:$this->config->get( "$var" );
+	}
 
     protected function validate()
     {
-        if ( !$this->user->hasPermission( 'modify', 'extension/payment/paygate' ) ) {
+        if ( !$this->user->hasPermission( 'modify', self::PAYGATE_LANGUAGE ) ) {
             $this->error['warning'] = $this->language->get( 'error_permission' );
         }
 
