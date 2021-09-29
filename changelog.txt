@@ -1,6 +1,8 @@
 =====================================
 Date	  : Version: Description
 =====================================
+2021-09-29: v3.0.7 : Add PayPal to payment types.
+
 2021-07-20: v3.0.6 : Bug fixes and code quality improvements.
                      Fix logo issue on email and admin order detail page.
                      Improve display of payment redirect page.

@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2020 PayGate (Pty) Ltd
+ * Copyright (c) 2021 PayGate (Pty) Ltd
  *
  * Author: App Inlet (Pty) Ltd
  *
@@ -35,6 +35,10 @@ class ControllerExtensionPaymentPaygate extends Controller
 				'title' => 'SnapScan',
 				'img'   => $imgs . 'snapscan.svg',
 			],
+            'paypalmethod'       => [
+                'title' => 'PayPal',
+                'img'   => $imgs . 'paypal.svg',
+            ],
 			'mobicredmethod'     => [
 				'title' => 'Mobicred',
 				'img'   => $imgs . 'mobicred.svg',
@@ -77,6 +81,9 @@ class ControllerExtensionPaymentPaygate extends Controller
 			case 'snapscanmethod':
 				$PAY_METHOD_DETAIL = 'SnapScan';
 				break;
+            case 'paypalmethod':
+                $PAY_METHOD_DETAIL = 'PayPal';
+                break;
 			case 'mobicredmethod':
 				$PAY_METHOD_DETAIL = 'Mobicred';
 				break;
@@ -154,7 +161,7 @@ class ControllerExtensionPaymentPaygate extends Controller
 		$notifyUrl = $this->getNotifyUrl();
 		$userField1      = $order_info['order_id'];
 		$userField2      = $order_info['payment_firstname'] . ' ' . $order_info['payment_lastname'];
-		$userField3      = 'opencart-v3.0.4';
+		$userField3      = 'opencart-v3.0.7';
 		
 		/* getting order info ********/
 		
