@@ -1,5 +1,5 @@
 {#
- # Copyright (c) 2020 PayGate (Pty) Ltd
+ # Copyright (c) 2021 PayGate (Pty) Ltd
  #
  # Author: App Inlet (Pty) Ltd
  #
@@ -254,6 +254,20 @@
                                 <div class="col-sm-8">
                                     <select name="payment_paygate_snapscanmethod" id="input-snapscanmethod" class="form-control">
                                         {% if payment_paygate_snapscanmethod == 'yes' %}
+                                            <option value="yes" selected="selected">{{ text_methodyes }}</option>
+                                            <option value="no">{{ text_methodno }}</option>
+                                        {% else %}
+                                            <option value="yes">{{ text_methodyes }}</option>
+                                            <option value="no" selected="selected">{{ text_methodno }}</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" for="input-paypalmethod">{{ entry_paypalmethod }}</label>
+                                <div class="col-sm-8">
+                                    <select name="payment_paygate_paypalmethod" id="input-paypalmethod" class="form-control">
+                                        {% if payment_paygate_paypalmethod == 'yes' %}
                                             <option value="yes" selected="selected">{{ text_methodyes }}</option>
                                             <option value="no">{{ text_methodno }}</option>
                                         {% else %}

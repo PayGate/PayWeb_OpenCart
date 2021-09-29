@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2020 PayGate (Pty) Ltd
+ * Copyright (c) 2021 PayGate (Pty) Ltd
  *
  * Author: App Inlet (Pty) Ltd
  *
@@ -39,7 +39,8 @@ $_['entry_testmode']           = 'Test Mode';
 $_['entry_creditcardmethod']   = 'Enable Card on Checkout';
 $_['entry_banktransfermethod'] = 'Enable SiD Secure EFT on Checkout';
 $_['entry_zappermethod']       = 'Enable Zapper on Checkout';
-$_['entry_snapscanmethod']       = 'Enable SnapScan on Checkout';
+$_['entry_snapscanmethod']     = 'Enable SnapScan on Checkout';
+$_['entry_paypalmethod']       = 'Enable PayPal on Checkout';
 $_['entry_mobicredmethod']     = 'Enable Mobicred on Checkout';
 $_['entry_momopaymethod']      = 'Enable MoMoPay on Checkout';
 $_['entry_masterpassmethod']   = 'Enable MasterPass on Checkout';

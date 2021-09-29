@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2020 PayGate (Pty) Ltd
+ * Copyright (c) 2021 PayGate (Pty) Ltd
  *
  * Author: App Inlet (Pty) Ltd
  *
@@ -42,7 +42,8 @@ class ModelExtensionPaymentPaygate extends Model
             'creditcardmethod'   => 'Card',
             'banktransfermethod' => 'SiD Secure EFT',
             'zappermethod'       => 'Zapper',
-            'snapscanmethod'       => 'SnapScan',
+            'snapscanmethod'     => 'SnapScan',
+            'paypalmethod'       => 'PayPal',
             'mobicredmethod'     => 'Mobicred',
             'momopaymethod'      => 'MoMoPay',
             'masterpassmethod'   => 'MasterPass',

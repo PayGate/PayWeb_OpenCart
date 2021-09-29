@@ -1,7 +1,6 @@
 <?php
-
 /*
- * Copyright (c) 2020 PayGate (Pty) Ltd
+ * Copyright (c) 2021 PayGate (Pty) Ltd
  *
  * Author: App Inlet (Pty) Ltd
  *
@@ -110,6 +109,7 @@ class ControllerExtensionPaymentPaygate extends Controller
 		$data['payment_paygate_banktransfermethod'] = $this->checkPostValue("payment_paygate_banktransfermethod");
 		$data['payment_paygate_zappermethod'] = $this->checkPostValue("payment_paygate_zappermethod");
 		$data['payment_paygate_snapscanmethod'] = $this->checkPostValue("payment_paygate_snapscanmethod");
+        $data['payment_paygate_paypalmethod'] = $this->checkPostValue("payment_paygate_paypalmethod");
 		$data['payment_paygate_mobicredmethod'] = $this->checkPostValue("payment_paygate_mobicredmethod");
 		$data['payment_paygate_momopaymethod'] = $this->checkPostValue("payment_paygate_momopaymethod");
 		$data['payment_paygate_geo_zone_id'] = $this->checkPostValue("payment_paygate_geo_zone_id");
