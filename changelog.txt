@@ -1,6 +1,10 @@
 =====================================
 Date	  : Version: Description
 =====================================
+2022-02-03: v3.0.8 : Add Scan to Pay payment type rebrand.
+                     Improve JSON returned in some themes.
+                     Improve IPN and Session handling.
+
 2021-09-29: v3.0.7 : Add PayPal to payment types.
 
 2021-07-20: v3.0.6 : Bug fixes and code quality improvements.
