@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2021 PayGate (Pty) Ltd
+ * Copyright (c) 2022 PayGate (Pty) Ltd
  *
  * Author: App Inlet (Pty) Ltd
  *
@@ -43,7 +43,7 @@ $_['entry_snapscanmethod']     = 'Enable SnapScan on Checkout';
 $_['entry_paypalmethod']       = 'Enable PayPal on Checkout';
 $_['entry_mobicredmethod']     = 'Enable Mobicred on Checkout';
 $_['entry_momopaymethod']      = 'Enable MoMoPay on Checkout';
-$_['entry_masterpassmethod']   = 'Enable MasterPass on Checkout';
+$_['entry_scantopaymethod']    = 'Enable ScanToPay on Checkout';
 
 // Tab
 $_['tab_general']      = 'General';

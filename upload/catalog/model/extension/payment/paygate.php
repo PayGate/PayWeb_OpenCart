@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2021 PayGate (Pty) Ltd
+ * Copyright (c) 2022 PayGate (Pty) Ltd
  *
  * Author: App Inlet (Pty) Ltd
  *
@@ -46,7 +46,7 @@ class ModelExtensionPaymentPaygate extends Model
             'paypalmethod'       => 'PayPal',
             'mobicredmethod'     => 'Mobicred',
             'momopaymethod'      => 'MoMoPay',
-            'masterpassmethod'   => 'MasterPass',
+            'scantopaymethod'   => 'ScanToPay',
         ];
         $pm = [];
         foreach ( $paymethods as $key => $paymethod ) {
