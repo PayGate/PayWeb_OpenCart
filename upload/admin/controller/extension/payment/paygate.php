@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2021 PayGate (Pty) Ltd
+ * Copyright (c) 2022 PayGate (Pty) Ltd
  *
  * Author: App Inlet (Pty) Ltd
  *
@@ -11,14 +11,14 @@ class ControllerExtensionPaymentPaygate extends Controller
 {
 
     private $error = array();
-	
+
 	const PAYMENT_URL = "marketplace/extension";
 	const PAYGATE_LANGUAGE = "extension/payment/paygate";
-	
+
 	public function getToken(){
 		return $this->session->data['user_token'];
 	}
-	
+
 	public function formatPaymentUrl($path){
 		$token = $this->getToken();
 		return $this->url->link(
@@ -27,7 +27,7 @@ class ControllerExtensionPaymentPaygate extends Controller
 			true
 		);
 	}
-	
+
 	public function formatUrl($path){
 		$token = $this->getToken();
 		return $this->url->link(
@@ -75,7 +75,7 @@ class ControllerExtensionPaymentPaygate extends Controller
         $data['button_cancel'] = $this->language->get( 'button_cancel' );
         $data['error_warning'] = isset($this->error['warning'])?$data['error_warning']:'';
         $data['breadcrumbs'] = array();
-		
+
         $data['breadcrumbs'][] = array(
             'text' => $this->language->get( 'text_home' ),
             'href' => $this->formatUrl('common/dashboard'),
@@ -89,7 +89,7 @@ class ControllerExtensionPaymentPaygate extends Controller
         $data['breadcrumbs'][] = array(
             'text' => $this->language->get( 'heading_title' ),
             'href' => $this->formatUrl(self::PAYGATE_LANGUAGE),
-        );	
+        );
 
         $data['action'] = $this->formatUrl(self::PAYGATE_LANGUAGE);
         $data['cancel'] = $this->formatPaymentUrl(self::PAYMENT_URL);
@@ -113,14 +113,14 @@ class ControllerExtensionPaymentPaygate extends Controller
 		$data['payment_paygate_mobicredmethod'] = $this->checkPostValue("payment_paygate_mobicredmethod");
 		$data['payment_paygate_momopaymethod'] = $this->checkPostValue("payment_paygate_momopaymethod");
 		$data['payment_paygate_geo_zone_id'] = $this->checkPostValue("payment_paygate_geo_zone_id");
-		$data['payment_paygate_masterpassmethod'] = $this->checkPostValue("payment_paygate_masterpassmethod");
+		$data['payment_paygate_scantopaymethod'] = $this->checkPostValue("payment_paygate_scantopaymethod");
         $data['header']      = $this->load->controller( 'common/header' );
         $data['column_left'] = $this->load->controller( 'common/column_left' );
         $data['footer']      = $this->load->controller( 'common/footer' );
 
         $this->response->setOutput( $this->load->view( self::PAYGATE_LANGUAGE, $data ) );
     }
-	
+
 	public function checkPostValue($var){
 		return isset($this->request->post["$var"])?$this->request->post["$var"]:$this->config->get( "$var" );
 	}
