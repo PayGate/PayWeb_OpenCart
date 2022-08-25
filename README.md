@@ -1,7 +1,7 @@
 # PayWeb_OpenCart
 ## PayGate OpenCart plugin v3.0.8 for OpenCart v3.0.3.7
 
-This is the PayGate PayWeb3 plugin for OpenCart. Please feel free to contact the PayGate support team at support@paygate.co.za should you require any assistance.
+This is the PayGate PayWeb3 plugin for OpenCart. Please feel free to contact the PayGate support team at supportsa@dpogroup.com should you require any assistance.
 
 ## Installation
 [![How To Setup PayGate PayWeb for OpenCart](https://appinlet.com/wp-content/uploads/2021/01/How-To-Setup-PayGate-PayWeb-for-OpenCart.jpg)](https://www.youtube.com/watch?v=vP457DVuhGc "How To Setup PayGate PayWeb for OpenCart")
