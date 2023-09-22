@@ -1,6 +1,9 @@
 =====================================
 Date	  : Version: Description
 =====================================
+2023-09-22: v3.1.0 : Update for PHP 8.0.
+                     Test on OpenCart 4.0.2.2.
+
 2022-02-03: v3.0.8 : Add Scan to Pay payment type rebrand.
                      Improve JSON returned in some themes.
                      Improve IPN and Session handling.

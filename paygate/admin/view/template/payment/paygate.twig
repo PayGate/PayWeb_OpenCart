@@ -1,0 +1,370 @@
+{#
+# Copyright (c) 2023 Payfast (Pty) Ltd
+#
+# Author: App Inlet (Pty) Ltd
+#
+# Released under the GNU General Public License
+#}
+{{ header }}{{ column_left }}
+<div id="content">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="d-flex flex-row-reverse">
+                <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}"
+                   class="btn btn-default"><em class="fa fa-reply"></em></a>
+                <button type="submit" form="form-paygate" data-toggle="tooltip" title="{{ button_save }}"
+                        class="btn btn-primary">
+                    <em class="fa fa-save"></em></button>
+            </div>
+            <h1><strong>{{ heading_title }}</strong></h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li class="breadcrumb-item d-inline"><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if error_warning %}
+            <div class="alert alert-danger"><em class="fa fa-exclamation-circle"></em> {{ error_warning }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        <div class="border panel panel-default">
+            <div class="border-bottom panel-heading">
+                <h5 class="m-3 panel-title"><em class="fa fa-pencil"></em> {{ text_edit }}
+            </div>
+            <div class="panel-body bg-white">
+                <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-paygate"
+                      class="form-horizontal">
+
+{#                    <ul class="nav nav-tabs">#}
+{#                        <li class="active"><a href="#tab-general" data-toggle="tab">{{ tab_general }}</a>#}
+{#                        </li>#}
+{#                        <li><a href="#tab-order-status" data-toggle="tab">{{ tab_order_status }}</a></li>#}
+{#                        <li><a href="#tab-pay-methods" data-toggle="tab">{{ tab_pay_methods }}</a></li>#}
+{#                    </ul>#}
+                    <div class="tab-content">
+
+                        <div class="tab-pane active py-4" id="tab-general">
+                            <div class="row align-items-center form-group">
+                                <label class="d-flex flex-row-reverse col-sm-2 col-form-label control-label"
+                                       for="input-paygate-id">{{ entry_merchant_id }}</label>
+                                <div class="col-sm-9">
+                                    <input type="text" name="payment_paygate_merchant_id" id="input-paygate-id"
+                                           value="{{ payment_paygate_merchant_id }}" class="form-control">
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="my-4 row align-items-center form-group">
+                                <label class="col-form-label d-flex flex-row-reverse col-sm-2 col-form-label control-label"
+                                       for="input-merchant-key">{{ entry_merchant_key }}</label>
+                                <div class="col-sm-9">
+                                    <input type="text" name="payment_paygate_merchant_key" id="input-merchant-key"
+                                           value="{{ payment_paygate_merchant_key }}" class="form-control">
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="my-4 row align-items-center form-group">
+                                <label class="col-form-label d-flex flex-row-reverse col-sm-2 col-form-label control-label" for="input-testmode">{{ entry_testmode }}</label>
+                                <div class="col-sm-9">
+                                    <select name="payment_paygate_testmode" id="input-testmode" class="form-control">
+                                        {% if payment_paygate_testmode %}
+                                            <option value="test" selected="selected">{{ text_testmode }}</option>
+                                            <option value="live">{{ text_livemode }}</option>
+                                        {% else %}
+                                            <option value="test">{{ text_testmode }}</option>
+                                            <option value="live" selected="selected">{{ text_livemode }}</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="my-4 row align-items-center form-group">
+                                <label class="col-form-label d-flex flex-row-reverse col-sm-2 col-form-label control-label"
+                                       for="input-geo-zone">{{ entry_geo_zone }}</label>
+                                <div class="col-sm-9">
+                                    <select name="payment_paygate_geo_zone_id" id="input-geo-zone" class="form-control">
+                                        <option value="0">{{ text_all_zones }}</option>
+                                        {% for geo_zone in geo_zones %}
+                                            {% if geo_zone.geo_zone_id == payment_paygate_geo_zone_id %}
+                                                <option value="{{ geo_zone.geo_zone_id }}"
+                                                        selected="selected">{{ geo_zone.name }}</option>
+                                            {% else %}
+                                                <option value="{{ geo_zone.geo_zone_id }}">{{ geo_zone.name }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="my-4 row align-items-center form-group">
+                                <label class="col-form-label d-flex flex-row-reverse col-sm-2 col-form-label control-label" for="input-status">{{ entry_status }}</label>
+                                <div class="col-sm-9">
+                                    <select name="payment_paygate_status" id="input-status" class="form-control">
+                                        {% if payment_paygate_status %}
+                                            <option value="1" selected="selected">{{ text_enabled }}</option>
+                                            <option value="0">{{ text_disabled }}</option>
+                                        {% else %}
+                                            <option value="1">{{ text_enabled }}</option>
+                                            <option value="0" selected="selected">{{ text_disabled }}</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="my-4 row align-items-center form-group">
+                                <label class="col-form-label d-flex flex-row-reverse col-sm-2 col-form-label control-label"
+                                       for="input-notifyredirect">{{ entry_notify_redirect }}</label>
+                                <div class="col-sm-9">
+                                    <select name="payment_paygate_notifyredirect" id="input-notifyredirect"
+                                            class="form-control">
+                                        {% if payment_paygate_notifyredirect == 'notify' %}
+                                            <option value="notify" selected="selected">{{ text_notify }}</option>
+                                            <option value="redirect">{{ text_redirect }}</option>
+                                        {% else %}
+                                            <option value="notify">{{ text_notify }}</option>
+                                            <option value="redirect" selected="selected">{{ text_redirect }}</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="my-2 row align-items-center form-group">
+                                <label class="col-form-label d-flex flex-row-reverse col-sm-2 col-form-label col-form-label control-label"
+                                       for="input-sort-order">{{ entry_sort_order }}</label>
+                                <div class="col-sm-9">
+                                    <input type="text" name="payment_paygate_sort_order"
+                                           value="{{ payment_paygate_sort_order }}"
+                                           placeholder="{{ entry_sort_order }}" id="input-sort-order"
+                                           class="form-control"/>
+                                </div>
+                            </div>
+                            <hr>
+                            {#                        </div> #}
+
+                            {#                        <div class="tab-pane" id="tab-order-status"> #}
+                            <div class="my-4 row align-items-center form-group">
+                                <label class="col-form-label d-flex flex-row-reverse col-sm-2 col-form-label control-label"
+                                       for="input-order-status">{{ entry_order_status }}</label>
+                                <div class="col-sm-9">
+                                    <select name="payment_paygate_order_status_id" id="input-order-status"
+                                            class="form-control">
+                                        {% for order_status in order_statuses %}
+                                            {% if order_status.order_status_id == payment_paygate_order_status_id %}
+                                                <option value="{{ order_status.order_status_id }}"
+                                                        selected="selected">{{ order_status.name }}</option>
+                                            {% else %}
+                                                <option value="{{ order_status.order_status_id }}">{{ order_status.name }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="my-4 row align-items-center form-group">
+                                <label class="col-form-label d-flex flex-row-reverse col-sm-2 col-form-label control-label"
+                                       for="input-success-order-status">{{ entry_success_status }}</label>
+                                <div class="col-sm-9">
+                                    <select name="payment_paygate_success_order_status_id"
+                                            id="input-success-order-status"
+                                            class="form-control">
+                                        {% for order_status in order_statuses %}
+                                            {% if order_status.order_status_id == payment_paygate_success_order_status_id %}
+                                                <option value="{{ order_status.order_status_id }}"
+                                                        selected="selected">{{ order_status.name }}</option>
+                                            {% else %}
+                                                <option value="{{ order_status.order_status_id }}">{{ order_status.name }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="my-4 row align-items-center form-group">
+                                <label class="col-form-label d-flex flex-row-reverse col-sm-2 col-form-label control-label"
+                                       for="input-failed-order-status">{{ entry_failed_status }}</label>
+                                <div class="col-sm-9">
+                                    <select name="payment_paygate_failed_order_status_id" id="input-failed-order-status"
+                                            class="form-control">
+                                        {% for order_status in order_statuses %}
+                                            {% if order_status.order_status_id == payment_paygate_failed_order_status_id %}
+                                                <option value="{{ order_status.order_status_id }}"
+                                                        selected="selected">{{ order_status.name }}</option>
+                                            {% else %}
+                                                <option value="{{ order_status.order_status_id }}">{{ order_status.name }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="my-4 row align-items-center form-group">
+                                <label class="col-form-label d-flex flex-row-reverse col-sm-2 col-form-label control-label"
+                                       for="input-cancelled-order-status">{{ entry_cancelled_status }}</label>
+                                <div class="col-sm-9">
+                                    <select name="payment_paygate_cancelled_order_status_id"
+                                            id="input-cancelled-order-status"
+                                            class="form-control">
+                                        {% for order_status in order_statuses %}
+                                            {% if order_status.order_status_id == payment_paygate_cancelled_order_status_id %}
+                                                <option value="{{ order_status.order_status_id }}"
+                                                        selected="selected">{{ order_status.name }}</option>
+                                            {% else %}
+                                                <option value="{{ order_status.order_status_id }}">{{ order_status.name }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            {#                        </div> #}
+
+                            {#                        <div class="tab-pane" id="tab-pay-methods"> #}
+                            <div class="form-group">
+                                <p class="col-sm-12 text-center">Enabled payment types must also be enabled on your
+                                    Paygate account. <a href="https://www.paygate.co.za/get-started/" target="_blank">Click
+                                        here</a> to find out more.</p>
+                            </div>
+                            <div class="my-4 row align-items-center form-group">
+                                <label class="col-form-label d-flex flex-row-reverse col-sm-2 col-form-label control-label"
+                                       for="input-creditcardmethod">{{ entry_creditcardmethod }}</label>
+                                <div class="col-sm-9">
+                                    <select name="payment_paygate_creditcardmethod" id="input-creditcardmethod"
+                                            class="form-control">
+                                        {% if payment_paygate_creditcardmethod == 'yes' %}
+                                            <option value="yes" selected="selected">{{ text_methodyes }}</option>
+                                            <option value="no">{{ text_methodno }}</option>
+                                        {% else %}
+                                            <option value="yes">{{ text_methodyes }}</option>
+                                            <option value="no" selected="selected">{{ text_methodno }}</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="my-4 row align-items-center form-group">
+                                <label class="col-form-label d-flex flex-row-reverse col-sm-2 col-form-label control-label"
+                                       for="input-banktransfermethod">{{ entry_banktransfermethod }}</label>
+                                <div class="col-sm-9">
+                                    <select name="payment_paygate_banktransfermethod" id="input-banktransfermethod"
+                                            class="form-control">
+                                        {% if payment_paygate_banktransfermethod == 'yes' %}
+                                            <option value="yes" selected="selected">{{ text_methodyes }}</option>
+                                            <option value="no">{{ text_methodno }}</option>
+                                        {% else %}
+                                            <option value="yes">{{ text_methodyes }}</option>
+                                            <option value="no" selected="selected">{{ text_methodno }}</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="my-4 row align-items-center form-group">
+                                <label class="col-form-label d-flex flex-row-reverse col-sm-2 col-form-label control-label"
+                                       for="input-zappermethod">{{ entry_zappermethod }}</label>
+                                <div class="col-sm-9">
+                                    <select name="payment_paygate_zappermethod" id="input-zappermethod"
+                                            class="form-control">
+                                        {% if payment_paygate_zappermethod == 'yes' %}
+                                            <option value="yes" selected="selected">{{ text_methodyes }}</option>
+                                            <option value="no">{{ text_methodno }}</option>
+                                        {% else %}
+                                            <option value="yes">{{ text_methodyes }}</option>
+                                            <option value="no" selected="selected">{{ text_methodno }}</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="my-4 row align-items-center form-group">
+                                <label class="col-form-label d-flex flex-row-reverse col-sm-2 col-form-label control-label"
+                                       for="input-snapscanmethod">{{ entry_snapscanmethod }}</label>
+                                <div class="col-sm-9">
+                                    <select name="payment_paygate_snapscanmethod" id="input-snapscanmethod"
+                                            class="form-control">
+                                        {% if payment_paygate_snapscanmethod == 'yes' %}
+                                            <option value="yes" selected="selected">{{ text_methodyes }}</option>
+                                            <option value="no">{{ text_methodno }}</option>
+                                        {% else %}
+                                            <option value="yes">{{ text_methodyes }}</option>
+                                            <option value="no" selected="selected">{{ text_methodno }}</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="my-4 row align-items-center form-group">
+                                <label class="col-form-label d-flex flex-row-reverse col-sm-2 col-form-label control-label"
+                                       for="input-paypalmethod">{{ entry_paypalmethod }}</label>
+                                <div class="col-sm-9">
+                                    <select name="payment_paygate_paypalmethod" id="input-paypalmethod"
+                                            class="form-control">
+                                        {% if payment_paygate_paypalmethod == 'yes' %}
+                                            <option value="yes" selected="selected">{{ text_methodyes }}</option>
+                                            <option value="no">{{ text_methodno }}</option>
+                                        {% else %}
+                                            <option value="yes">{{ text_methodyes }}</option>
+                                            <option value="no" selected="selected">{{ text_methodno }}</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="my-4 row align-items-center form-group">
+                                <label class="col-form-label d-flex flex-row-reverse col-sm-2 col-form-label control-label"
+                                       for="input-mobicredmethod">{{ entry_mobicredmethod }}</label>
+                                <div class="col-sm-9">
+                                    <select name="payment_paygate_mobicredmethod" id="input-mobicredmethod"
+                                            class="form-control">
+                                        {% if payment_paygate_mobicredmethod == 'yes' %}
+                                            <option value="yes" selected="selected">{{ text_methodyes }}</option>
+                                            <option value="no">{{ text_methodno }}</option>
+                                        {% else %}
+                                            <option value="yes">{{ text_methodyes }}</option>
+                                            <option value="no" selected="selected">{{ text_methodno }}</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="my-4 row align-items-center form-group">
+                                <label class="col-form-label d-flex flex-row-reverse col-sm-2 col-form-label control-label"
+                                       for="input-momopaymethod">{{ entry_momopaymethod }}</label>
+                                <div class="col-sm-9">
+                                    <select name="payment_paygate_momopaymethod" id="input-momopaymethod"
+                                            class="form-control">
+                                        {% if payment_paygate_momopaymethod == 'yes' %}
+                                            <option value="yes" selected="selected">{{ text_methodyes }}</option>
+                                            <option value="no">{{ text_methodno }}</option>
+                                        {% else %}
+                                            <option value="yes">{{ text_methodyes }}</option>
+                                            <option value="no" selected="selected">{{ text_methodno }}</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="my-4 row align-items-center form-group">
+                                <label class="col-form-label d-flex flex-row-reverse col-sm-2 col-form-label control-label"
+                                       for="input-scantopaymethod">{{ entry_scantopaymethod }}</label>
+                                <div class="col-sm-9">
+                                    <select name="payment_paygate_scantopaymethod" id="input-scantopaymethod"
+                                            class="form-control">
+                                        {% if payment_paygate_scantopaymethod == 'yes' %}
+                                            <option value="yes" selected="selected">{{ text_methodyes }}</option>
+                                            <option value="no">{{ text_methodno }}</option>
+                                        {% else %}
+                                            <option value="yes">{{ text_methodyes }}</option>
+                                            <option value="no" selected="selected">{{ text_methodno }}</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{{ footer }}
