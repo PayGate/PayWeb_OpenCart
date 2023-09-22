@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2022 PayGate (Pty) Ltd
+ * Copyright (c) 2023 Payfast (Pty) Ltd
  *
  * Author: App Inlet (Pty) Ltd
  *
@@ -8,5 +8,5 @@
  */
 
 // Text
-$_['text_title']            = 'PayGate';
-$_['text_paygate_checkout'] = 'Pay via PayGate';
+$_['text_title']            = 'Paygate';
+$_['text_paygate_checkout'] = 'Pay via Paygate';

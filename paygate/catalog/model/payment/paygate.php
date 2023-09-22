@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2022 PayGate (Pty) Ltd
+ * Copyright (c) 2023 Payfast (Pty) Ltd
  *
  * Author: App Inlet (Pty) Ltd
  *

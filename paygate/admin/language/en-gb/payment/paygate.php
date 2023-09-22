@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2022 PayGate (Pty) Ltd
+ * Copyright (c) 2023 Payfast (Pty) Ltd
  *
  * Author: App Inlet (Pty) Ltd
  *
@@ -8,12 +8,12 @@
  */
 
 // Heading
-$_['heading_title'] = 'PayGate';
+$_['heading_title'] = 'Paygate';
 
 // Text
 $_['text_payment']   = 'Payment';
-$_['text_success']   = 'You have successfully configured the PayGate payment module.';
-$_['text_edit']      = 'Edit PayGate';
+$_['text_success']   = 'You have successfully configured the Paygate payment module.';
+$_['text_edit']      = 'Edit Paygate';
 $_['text_extension'] = 'Extensions';
 $_['text_notify']    = 'Disabled';
 $_['text_redirect']  = 'Enabled';
@@ -30,8 +30,8 @@ $_['entry_status']             = 'Status';
 $_['entry_sort_order']         = 'Sort Order';
 $_['text_paygate']             = '<a onclick="window.open(\'https://www.paygate.co.za/\');">
 <img src="/extension/paygate/admin/view/image/payment/paygate.png" 
-alt="PayGate" title="PayGate" style="border: 1px solid #EEEEEE;" /></a>';
-$_['entry_merchant_id']        = 'PayGate ID';
+alt="Paygate" title="Paygate" style="border: 1px solid #EEEEEE;" /></a>';
+$_['entry_merchant_id']        = 'Paygate ID';
 $_['entry_merchant_key']       = 'Encryption Key';
 $_['entry_success_status']     = 'Successful';
 $_['entry_failed_status']      = 'Failed';
@@ -56,4 +56,4 @@ $_['tab_pay_methods']  = 'Payment Types';
 $_['help_total'] = 'The checkout total the order must reach before this payment method becomes active.';
 
 // Error
-$_['error_permission'] = 'Warning: You do not have permission to modify the PayGate payment method!';
+$_['error_permission'] = 'Warning: You do not have permission to modify the Paygate payment method!';

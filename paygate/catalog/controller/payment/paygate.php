@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2022 PayGate (Pty) Ltd
+ * Copyright (c) 2023 Payfast (Pty) Ltd
  *
  * Author: App Inlet (Pty) Ltd
  *
@@ -393,7 +393,7 @@ QUERY;
                  </div>
              </div>
          </form>
-         <p style="text-align:center;">Redirecting you to PayGate...</p>
+         <p style="text-align:center;">Redirecting you to Paygate...</p>
          <script type="text/javascript">document.getElementById("pw3form").submit();</script>
          <script type="text/javascript">$("#button-confirm").hide();</script>
          <script type="text/javascript">$("#button-confirm").trigger('click');</script>
@@ -465,7 +465,7 @@ HTML;
                 $resultsComment = "Transaction Cancelled by User.";
             }
             if ($useRedirect) {
-                $resultsComment = "Redirect response from PayGate with a status of " . $statusDesc . $payMethodDesc;
+                $resultsComment = "Redirect response from Paygate with a status of " . $statusDesc . $payMethodDesc;
             }
         } else {
             $orderStatusId  = 1;
@@ -483,7 +483,7 @@ HTML;
     }
 
     /**
-     * Handles redirect response from PayGate
+     * Handles redirect response from Paygate
      * Is always received
      * Handle according to config setting for Notify/Redirect
      *
@@ -728,14 +728,14 @@ HTML;
     }
 
     /**
-     * Handles notify response from PayGate
+     * Handles notify response from Paygate
      * Controlled by Redirect/Notify setting in config
      */
     public function notify_handler()
     {
         // Shouldn't be able to get here in redirect as notify url is not set in redirect mode
         if ($this->config->get('payment_paygate_notifyredirect') === 'notify') {
-            // Notify PayGate that information has been received
+            // Notify Paygate that information has been received
             echo 'OK';
 
             $errors = isset($EERROR);
@@ -757,7 +757,7 @@ HTML;
                     $orderStatusId = $txnData['orderStatusId'];
                     $statusDesc    = $txnData['statusDesc'];
 
-                    $resultsComment = "Notify response from PayGate with a status of " . $statusDesc . $payMethodDesc;
+                    $resultsComment = "Notify response from Paygate with a status of " . $statusDesc . $payMethodDesc;
                     $this->load->model(self::CHECKOUT_MODEL);
                     if ($statusDesc == 'approved') {
                         $this->cart->clear();
@@ -843,7 +843,7 @@ HTML;
     {
         if ($this->session->data['payment_method']['code'] == self::PAYGATE_CODE) {
             $this->load->model(self::CHECKOUT_MODEL);
-            $comment = 'Redirected to PayGate';
+            $comment = 'Redirected to Paygate';
             $this->model_checkout_order->addOrderHistory(
                 $this->session->data['order_id'],
                 $this->config->get('payment_paygate_order_status_id'),
@@ -859,7 +859,7 @@ HTML;
 
         if ($this->session->data['payment_method']['code'] == self::PAYGATE_CODE) {
             $this->load->model(self::CHECKOUT_MODEL);
-            /************** $comment = 'Before Redirect to PayGate'; ***********/
+            /************** $comment = 'Before Redirect to Paygate'; ***********/
             $this->model_checkout_order->addOrderHistory($this->session->data['order_id'], 1);
             $json['answer'] = 'success';
         }
